@@ -9,8 +9,16 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Post.belongsTo(models.User);
-            models.User.hasMany(Post);
+            Post.belongsTo(models.User, {
+                foreignKey: "author",
+                onUpdate: "CASCADE",
+                onDelete: "CASCADE",
+            });
+            models.User.hasMany(Post, {
+                foreignKey: "author",
+                onUpdate: "CASCADE",
+                onDelete: "CASCADE",
+            });
         }
     }
     Post.init(
@@ -37,6 +45,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             sequelize,
             modelName: "Post",
+            tableName: "posts",
         }
     );
     return Post;

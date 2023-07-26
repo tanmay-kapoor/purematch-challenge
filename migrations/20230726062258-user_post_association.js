@@ -3,18 +3,18 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        queryInterface.addConstraint("Posts", {
-            fields: ["UserEmail"],
+        queryInterface.addConstraint("posts", {
+            fields: ["author"],
             type: "foreign key",
             name: "user_post_association",
             references: {
-                table: "Users",
+                table: "users",
                 field: "email",
             },
         });
     },
 
     async down(queryInterface, Sequelize) {
-        queryInterface.removeConstraint("Posts", "user_post_association");
+        queryInterface.removeConstraint("posts", "user_post_association");
     },
 };

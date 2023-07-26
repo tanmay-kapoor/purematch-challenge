@@ -7,12 +7,12 @@ class PostService {
     }
 
     static async addPost(details) {
-        const { title, description, photo, UserEmail } = details;
-        return await Post.create({ title, description, photo, UserEmail });
+        const { title, description, photo, author } = details;
+        return await Post.create({ title, description, photo, author });
     }
 
     static async getPostsByUser(email) {
-        return await Post.findAll({ where: { UserEmail: email }, raw: true });
+        return await Post.findAll({ where: { author: email }, raw: true });
     }
 }
 

@@ -63,7 +63,7 @@ exports.createPost = async (req, res, next) => {
         const details = {
             ...req.body,
             photo: imageName,
-            UserEmail: req.user.email,
+            author: req.user.email,
         };
         await PostService.addPost(details);
 
