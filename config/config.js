@@ -7,6 +7,9 @@ module.exports = {
         database: process.env.DATABASE_DEV,
         host: process.env.DB_HOST_DEV,
         dialect: "postgresql",
+        define: {
+            timestamps: false,
+        },
     },
     test: {
         username: process.env.DB_USER_TEST,
