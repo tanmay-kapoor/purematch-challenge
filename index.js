@@ -28,7 +28,6 @@ app.use("/users", require("./routes/user"));
 app.use("/posts", require("./routes/post"));
 
 app.use((err, req, res, next) => {
-    console.log(err);
     if (!err.code) err.code = 500;
     res.status(err.code).json({ error: err.message });
 });

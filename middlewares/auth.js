@@ -9,7 +9,7 @@ exports.isLoggedIn = async (req, res, next) => {
         return res.status(401).json({ error: "No authorization provided." });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET, (err, user) => {
         if (err) {
             return res.status(403).json({ error: err.message });
         }

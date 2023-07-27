@@ -3,7 +3,7 @@ const Post = db.Post;
 
 class PostService {
     static async getAllPosts() {
-        return await Post.findAll();
+        return await Post.findAll({ raw: true });
     }
 
     static async addPost(details) {

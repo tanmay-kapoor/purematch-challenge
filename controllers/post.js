@@ -22,7 +22,8 @@ const s3 = new S3Client({
 
 exports.getAllPosts = async (req, res, next) => {
     try {
-        const posts = await PostService.getAllPosts();
+        let posts = await PostService.getAllPosts();
+        posts = await attachPhotoUrl(posts);
         res.status(200).json(posts);
     } catch (err) {
         next(err);
@@ -31,16 +32,8 @@ exports.getAllPosts = async (req, res, next) => {
 
 exports.getPostsByUser = async (req, res, next) => {
     try {
-        const posts = await PostService.getPostsByUser(req.params.email);
-        for (const post of posts) {
-            const params = {
-                Bucket: bucketName,
-                Key: post.photo,
-            };
-            const command = new GetObjectCommand(params);
-            const url = await getSignedUrl(s3, command, { expiresIn: 3600 }); // 1 hour
-            post.photoUrl = url;
-        }
+        let posts = await PostService.getPostsByUser(req.params.email);
+        posts = await attachPhotoUrl(posts);
         res.status(200).json(posts);
     } catch (err) {
         next(err);
@@ -77,4 +70,17 @@ exports.createPost = async (req, res, next) => {
 
 const randomImageName = (bytes = 32) => {
     return crypto.randomBytes(bytes).toString("hex");
+};
+
+const attachPhotoUrl = async (posts) => {
+    for (const post of posts) {
+        const params = {
+            Bucket: bucketName,
+            Key: post.photo,
+        };
+        const command = new GetObjectCommand(params);
+        const url = await getSignedUrl(s3, command, { expiresIn: 3600 }); // 1 hour
+        post.photoUrl = url;
+    }
+    return posts;
 };
