@@ -42,6 +42,18 @@ exports.getPostsByUser = async (req, res, next) => {
 
 exports.createPost = async (req, res, next) => {
     try {
+        if (!req.file) {
+            res.status(400).json({ message: "No file uploaded" });
+            return;
+        }
+
+        if (!req.body.title || !req.body.description) {
+            res.status(400).json({
+                message: "Title and description are required",
+            });
+            return;
+        }
+
         const imageName = randomImageName();
         const params = {
             Bucket: bucketName,

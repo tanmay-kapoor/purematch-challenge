@@ -7,6 +7,14 @@ const salt = bcrypt.genSaltSync(10);
 exports.createUser = async (req, res, next) => {
     try {
         const details = req.body;
+
+        if (!details["email"] || details["name"] || !details["password"]) {
+            res.status(400).json({
+                message: "Email, name and password are required",
+            });
+            return;
+        }
+
         if (!isValidEmail(details["email"])) {
             res.status(403).json({ error: "Invalid email." });
         } else if (!isValidPassword(details["password"])) {
@@ -29,6 +37,14 @@ exports.createUser = async (req, res, next) => {
 exports.authenticateUser = async (req, res, next) => {
     try {
         const details = req.body;
+
+        if (!details["email"] || !details["password"]) {
+            res.status(400).json({
+                message: "Email and password are required",
+            });
+            return;
+        }
+
         const user = await UserService.getUserByEmail(details["email"]);
 
         if (!user) {
