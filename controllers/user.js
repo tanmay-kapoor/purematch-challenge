@@ -47,13 +47,49 @@ exports.authenticateUser = async (req, res, next) => {
             return;
         }
 
-        const token = jwt.sign(
+        const accessToken = jwt.sign(
             { email: user["email"], role: "user" },
-            process.env.JWT_SECRET,
+            process.env.JWT_ACCESS_TOKEN_SECRET,
+            { expiresIn: "3d" }
+        );
+
+        const refreshToken = jwt.sign(
+            { email: user["email"], role: "user" },
+            process.env.JWT_REFRESH_TOKEN_SECRET,
             { expiresIn: "7d" }
         );
 
-        res.status(200).json({ message: "Login successful", token });
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            sameSite: "None",
+            secure: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.status(200).json({ message: "Login successful", accessToken });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.refreshToken = async (req, res, next) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        jwt.verify(
+            refreshToken,
+            process.env.JWT_REFRESH_TOKEN_SECRET,
+            (err, user) => {
+                if (err) {
+                    return res.status(403).json({ error: err.message });
+                }
+                const accessToken = jwt.sign(
+                    { email: user["email"], role: "user" },
+                    process.env.JWT_ACCESS_TOKEN_SECRET,
+                    { expiresIn: "3d" }
+                );
+                res.status(200).json({ accessToken });
+            }
+        );
     } catch (err) {
         next(err);
     }

@@ -17,3 +17,11 @@ exports.isLoggedIn = async (req, res, next) => {
         next();
     });
 };
+
+exports.checkRefreshTokenPresentInCookie = async (req, res, next) => {
+    if (req.cookies?.refreshToken) {
+        next();
+    } else {
+        res.status(403).json({ error: "Unauthorized." });
+    }
+};
