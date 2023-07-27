@@ -1,5 +1,6 @@
 require("dotenv").config();
 const fs = require("fs");
+const path = require("path");
 
 module.exports = {
     development: {
@@ -33,7 +34,7 @@ module.exports = {
         dialectOptions: {
             ssl: {
                 ca: fs
-                    .readFileSync(__dirname + "/global-bundle.pem")
+                    .readFileSync(path.join(__dirname, "global-bundle.pem"))
                     .toString(),
             },
         },

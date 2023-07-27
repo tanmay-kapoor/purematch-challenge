@@ -1,11 +1,8 @@
 const express = require("express");
 
 const postController = require("../controllers/post");
-const { isLoggedIn } = require("../middleware/auth");
-
-const multer = require("multer");
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const { isLoggedIn } = require("../middlewares/auth");
+const { upload } = require("../middlewares/upload");
 
 const router = express.Router();
 

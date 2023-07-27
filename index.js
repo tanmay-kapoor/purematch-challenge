@@ -27,7 +27,8 @@ app.use("/posts", require("./routes/post"));
 
 app.use((err, req, res, next) => {
     console.log(err);
-    res.status(500).json({ error: err.message });
+    if (!err.code) err.code = 500;
+    res.status(err.code).json({ error: err.message });
 });
 
 console.log("Syncing db...");
