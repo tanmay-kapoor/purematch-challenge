@@ -1,10 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const db = require("./models");
 
 const app = express();
 
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json()); //parsing http data
 app.use(express.json({ limit: "30mb", extended: true }));
@@ -21,9 +22,6 @@ app.use((req, res, next) => {
     next();
 });
 
-const db = require("./models");
-db.sequelize.sync();
-
 app.use("/users", require("./routes/user"));
 app.use("/posts", require("./routes/post"));
 
@@ -32,4 +30,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: err.message });
 });
 
-app.listen(port, () => console.log(`listening on port ${port}`));
+console.log("Syncing db...");
+db.sequelize.sync().then(() => {
+    app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+});

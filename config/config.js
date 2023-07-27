@@ -1,4 +1,5 @@
 require("dotenv").config();
+const fs = require("fs");
 
 module.exports = {
     development: {
@@ -7,6 +8,7 @@ module.exports = {
         database: process.env.DATABASE_DEV,
         host: process.env.DB_HOST_DEV,
         dialect: "postgresql",
+        logging: false,
         define: {
             timestamps: false,
         },
@@ -17,6 +19,7 @@ module.exports = {
         database: process.env.DATABASE_TEST,
         host: process.env.DB_HOST_TEST,
         dialect: "postgresql",
+        logging: false,
         define: {
             timestamps: false,
         },
@@ -27,6 +30,14 @@ module.exports = {
         database: process.env.DATABASE_PROD,
         host: process.env.DB_HOST_PROD,
         dialect: "postgresql",
+        dialectOptions: {
+            ssl: {
+                ca: fs
+                    .readFileSync(__dirname + "/global-bundle.pem")
+                    .toString(),
+            },
+        },
+        logging: false,
         define: {
             timestamps: false,
         },
