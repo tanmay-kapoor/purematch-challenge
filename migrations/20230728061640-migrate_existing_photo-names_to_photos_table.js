@@ -36,26 +36,19 @@ module.exports = {
             ["name"]
         );
 
-        const posts = [];
-        photos.forEach((photo) => {
-            const post = { id: photo.post_id, photo: photo.name };
-            posts.push(post);
-        });
-
-        const queries = posts.forEach((post) => {
-            queryInterface.sequelize.query(`
+        for (const photo of photos) {
+            await queryInterface.sequelize.query(`
                 UPDATE posts
-                SET photo = '${post.photo}'
-                WHERE id = ${post.id}
+                SET photo = '${photo.name}'
+                WHERE id = ${photo.post_id}
             `);
-        });
-        await Promise.all(queries);
+        }
 
         await queryInterface.changeColumn("posts", "photo", {
             allowNull: false,
             type: Sequelize.STRING,
         });
 
-        await queryInterface.bulkDelete("photos", null, {});
+        await queryInterface.bulkDelete("photos", {}, {});
     },
 };
