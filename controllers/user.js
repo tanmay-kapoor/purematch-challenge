@@ -8,7 +8,7 @@ exports.createUser = async (req, res, next) => {
     try {
         const details = req.body;
 
-        if (!details["email"] || details["name"] || !details["password"]) {
+        if (!details["email"] || !details["name"] || !details["password"]) {
             res.status(400).json({
                 message: "Email, name and password are required",
             });
