@@ -195,16 +195,33 @@ const randomImageName = (bytes = 32) => {
 };
 
 const attachPhotoUrl = async (posts) => {
+    const tempStructure = {};
+
     for (const post of posts) {
+        if (!tempStructure[post.id]) {
+            tempStructure[post.id] = {
+                ...post,
+                photos: [],
+            };
+        }
+
         const params = {
             Bucket: bucketName,
             Key: post["Photos.name"],
         };
+
         const command = new GetObjectCommand(params);
         const url = await getSignedUrl(s3, command, { expiresIn: 3600 }); // 1 hour
-        post.photoUrl = url;
-        delete post["Photos.name"];
-        delete post["Photos.post_id"];
+
+        tempStructure[post.id].photos.push(url);
+
+        delete tempStructure[post.id]["Photos.name"];
+        delete tempStructure[post.id]["Photos.post_id"];
     }
-    return posts;
+
+    const formattedData = [];
+    for (const id of Object.keys(tempStructure)) {
+        formattedData.push({ id, ...tempStructure[id] });
+    }
+    return formattedData;
 };
