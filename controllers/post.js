@@ -9,6 +9,7 @@ const {
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const crypto = require("crypto");
 const { maxCount } = require("../middlewares/upload");
+const dayjs = require("dayjs");
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
@@ -26,7 +27,7 @@ const s3 = new S3Client({
 exports.getAllPosts = async (req, res, next) => {
     try {
         let posts = await PostService.getAllPosts();
-        posts = await attachPhotoUrl(posts);
+        posts = await attachPhotoUrlAndFormat(posts);
         res.status(200).json(posts);
     } catch (err) {
         next(err);
@@ -36,7 +37,7 @@ exports.getAllPosts = async (req, res, next) => {
 exports.getPostsByUser = async (req, res, next) => {
     try {
         let posts = await PostService.getPostsByUser(req.params.email);
-        posts = await attachPhotoUrl(posts);
+        posts = await attachPhotoUrlAndFormat(posts);
         res.status(200).json(posts);
     } catch (err) {
         next(err);
@@ -92,7 +93,6 @@ exports.updatePost = async (req, res, next) => {
         await PostService.updatePostById(details);
 
         if (req.files && req.files.length > 0) {
-            console.log("in here");
             if (req.files.length > maxCount) {
                 res.status(400).json({
                     error: `Not allowed to upload more than ${maxCount} photos.`,
@@ -194,7 +194,7 @@ const randomImageName = (bytes = 32) => {
     return crypto.randomBytes(bytes).toString("hex");
 };
 
-const attachPhotoUrl = async (posts) => {
+const attachPhotoUrlAndFormat = async (posts) => {
     const tempStructure = {};
 
     for (const post of posts) {
@@ -205,16 +205,14 @@ const attachPhotoUrl = async (posts) => {
             };
         }
 
-        const params = {
-            Bucket: bucketName,
-            Key: post["Photos.name"],
-        };
-
-        const command = new GetObjectCommand(params);
-        const url = await getSignedUrl(s3, command, { expiresIn: 3600 }); // 1 hour
-
+        const url = await getSignedUrlFromS3(post["Photos.name"]);
         tempStructure[post.id].photos.push(url);
 
+        const createdAt = post["created_at"];
+        const timeDiff = getTimeAndDateDifference(createdAt);
+
+        tempStructure[post.id]["uploadTime"] = timeDiff;
+        delete tempStructure[post.id]["created_at"];
         delete tempStructure[post.id]["Photos.name"];
         delete tempStructure[post.id]["Photos.post_id"];
     }
@@ -224,4 +222,48 @@ const attachPhotoUrl = async (posts) => {
         formattedData.push({ id, ...tempStructure[id] });
     }
     return formattedData;
+};
+
+const getSignedUrlFromS3 = async (photoName) => {
+    const params = {
+        Bucket: bucketName,
+        Key: photoName,
+    };
+
+    const command = new GetObjectCommand(params);
+    return await getSignedUrl(s3, command, { expiresIn: 3600 }); // 1 hour
+};
+
+const getTimeAndDateDifference = (createdAt) => {
+    const rightNow = dayjs();
+    const startDate = dayjs(createdAt);
+    const diff = dateDiff(startDate, rightNow);
+
+    if (diff.yearDiff > 0) {
+        return `${diff.yearDiff} years ago`;
+    } else if (diff.monthDiff > 0) {
+        return `${diff.monthDiff} months ago`;
+    } else if (diff.weekDiff > 0) {
+        return `${diff.weekDiff} weeks ago`;
+    } else if (diff.dayDiff > 0) {
+        return `${diff.dayDiff} days ago`;
+    } else if (diff.hrsDiff > 0) {
+        return `${diff.hrsDiff} hours ago`;
+    } else if (diff.minsDiff > 0) {
+        return `${diff.minsDiff} minutes ago`;
+    } else {
+        return `${diff.secondsDiff} seconds ago`;
+    }
+};
+
+const dateDiff = (startDate, endDate) => {
+    return {
+        yearDiff: endDate.diff(startDate, "year"),
+        monthDiff: endDate.diff(startDate, "week") % 52,
+        weekDiff: endDate.diff(startDate, "month") % 12,
+        dayDiff: endDate.diff(startDate, "day") % 30,
+        hrsDiff: endDate.diff(startDate, "hour") % 24,
+        minsDiff: endDate.diff(startDate, "minute") % 60,
+        secondsDiff: endDate.diff(startDate, "second") % 60,
+    };
 };
