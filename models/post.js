@@ -37,11 +37,10 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 type: DataTypes.STRING,
             },
-            photo: {
-                allowNull: false,
-                type: DataTypes.STRING,
+            created_at: {
+                type: DataTypes.DATE,
+                defaultValue: sequelize.literal("CURRENT_TIMESTAMP"),
             },
-            created_at: DataTypes.DATE,
         },
         {
             sequelize,

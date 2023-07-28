@@ -7,6 +7,8 @@ module.exports = {
             fields: ["author"],
             type: "foreign key",
             name: "user_post_association",
+            onUpdate: "CASCADE",
+            onDelete: "CASCADE",
             references: {
                 table: "users",
                 field: "email",

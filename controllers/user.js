@@ -59,7 +59,7 @@ exports.authenticateUser = async (req, res, next) => {
 
         if (!passwordMatch) {
             // incorrect password
-            res.status(401).json("Incorrect password.");
+            res.status(401).json({ error: "Incorrect password." });
             return;
         }
 

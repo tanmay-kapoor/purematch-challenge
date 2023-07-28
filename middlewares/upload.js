@@ -16,3 +16,5 @@ exports.upload = multer({
         fileSize: 1024 * 1024,
     },
 });
+
+exports.maxCount = 5;

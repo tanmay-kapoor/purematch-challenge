@@ -7,6 +7,8 @@ module.exports = {
             fields: ["post_id"],
             type: "foreign key",
             name: "photo_post_association",
+            onUpdate: "CASCADE",
+            onDelete: "CASCADE",
             references: {
                 table: "posts",
                 field: "id",

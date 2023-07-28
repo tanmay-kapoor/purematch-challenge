@@ -17,7 +17,9 @@ module.exports = {
             const photo = { name: post.photo, post_id: post.id };
             photos.push(photo);
         });
-        await queryInterface.bulkInsert("photos", photos);
+        if (photos.length > 0) {
+            await queryInterface.bulkInsert("photos", photos);
+        }
 
         await queryInterface.removeColumn("posts", "photo");
     },

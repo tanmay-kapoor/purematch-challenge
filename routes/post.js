@@ -2,7 +2,7 @@ const express = require("express");
 
 const postController = require("../controllers/post");
 const { isLoggedIn } = require("../middlewares/auth");
-const { upload } = require("../middlewares/upload");
+const { upload, maxCount } = require("../middlewares/upload");
 
 const router = express.Router();
 
@@ -13,8 +13,22 @@ router.get("/:email", isLoggedIn, postController.getPostsByUser);
 router.post(
     "/create",
     isLoggedIn,
-    upload.single("photo"),
+    upload.array("photos", maxCount),
     postController.createPost
+);
+
+router.patch(
+    "/:id",
+    isLoggedIn,
+    upload.array("photos", maxCount),
+    postController.updatePost
+);
+
+router.put(
+    "/:id",
+    isLoggedIn,
+    upload.array("photos", maxCount),
+    postController.replacePost
 );
 
 module.exports = router;
