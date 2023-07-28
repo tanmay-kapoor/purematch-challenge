@@ -26,6 +26,8 @@ router.patch(
 
 router.post("/:id/comments/create", isLoggedIn, postController.createComment);
 
+router.get("/:id/comments/", isLoggedIn, postController.getCommentsByPostId);
+
 router.put(
     "/:id",
     isLoggedIn,

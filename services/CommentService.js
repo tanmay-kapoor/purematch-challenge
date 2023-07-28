@@ -7,9 +7,9 @@ class CommentService {
     }
 
     static async getCommentsByPostId(postId) {
-        // sort by time desc
         return await Comment.findAll({
             where: { post_id: postId },
+            order: [["created_at", "DESC"]],
             raw: true,
         });
     }

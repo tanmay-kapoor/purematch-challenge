@@ -181,6 +181,17 @@ exports.createComment = async (req, res, next) => {
     }
 };
 
+exports.getCommentsByPostId = async (req, res, next) => {
+    try {
+        const comments = await CommentService.getCommentsByPostId(
+            req.params.id
+        );
+        res.status(200).json(comments);
+    } catch (err) {
+        next(err);
+    }
+};
+
 const deletePhotosFromS3 = async (photos) => {
     for (const photo of photos) {
         const params = {
