@@ -23,6 +23,7 @@ if (config.use_env_variable) {
 const db = {
     User: require("./user")(sequelize, Sequelize.DataTypes),
     Post: require("./post")(sequelize, Sequelize.DataTypes),
+    Comment: require("./comment")(sequelize, Sequelize.DataTypes),
 };
 
 fs.readdirSync(__dirname)
