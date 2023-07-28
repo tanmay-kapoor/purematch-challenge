@@ -232,7 +232,11 @@ const attachPhotoUrlAndFormat = async (posts) => {
     for (const post of posts) {
         if (!tempStructure[post.id]) {
             tempStructure[post.id] = {
-                ...post,
+                id: post.id,
+                title: post.title,
+                description: post.description,
+                author: post.author,
+                created_at: post.created_at,
                 photos: [],
             };
         }
@@ -244,15 +248,21 @@ const attachPhotoUrlAndFormat = async (posts) => {
         const timeDiff = getTimeAndDateDifference(createdAt);
 
         tempStructure[post.id]["uploadTime"] = timeDiff;
-        delete tempStructure[post.id]["created_at"];
-        delete tempStructure[post.id]["Photos.name"];
-        delete tempStructure[post.id]["Photos.post_id"];
+        tempStructure[post.id]["name"] = post["User.name"];
+        if (post["User.username"]) {
+            tempStructure[post.id]["username"] = post["User.username"];
+        }
     }
 
     const formattedData = [];
     for (const id of Object.keys(tempStructure)) {
         formattedData.push({ id, ...tempStructure[id] });
     }
+    formattedData.sort((a, b) => {
+        const aDate = dayjs(a["created_at"]);
+        const bDate = dayjs(b["created_at"]);
+        return bDate.diff(aDate);
+    });
     return formattedData;
 };
 

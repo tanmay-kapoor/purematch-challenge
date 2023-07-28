@@ -16,6 +16,7 @@ class PostService {
                     model: User,
                 },
             ],
+            order: [["created_at", "DESC"]],
         });
     }
 
