@@ -14,6 +14,11 @@ class UserService {
         const { email, name, password } = details;
         return await User.create({ email, name, password });
     }
+
+    static async updateUser(email, details) {
+        const { username } = details;
+        return await User.update({ username }, { where: { email } });
+    }
 }
 
 module.exports = UserService;

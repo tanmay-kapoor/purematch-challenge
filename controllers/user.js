@@ -120,6 +120,31 @@ exports.getAllUsers = async (req, res, next) => {
     }
 };
 
+exports.attachUsername = async (req, res, next) => {
+    try {
+        const details = { ...req.body };
+
+        if (!details["username"]) {
+            res.status(400).json({
+                message: "Username is required",
+            });
+            return;
+        }
+
+        const user = await UserService.getUserByEmail(req.user.email);
+
+        if (!user) {
+            res.status(404).json({ error: "User not found." });
+            return;
+        }
+
+        await UserService.updateUser(req.user.email, details);
+        res.status(200).json({ message: "Username attached." });
+    } catch (err) {
+        next(err);
+    }
+};
+
 // Email validation regex
 const isValidEmail = (email) => {
     return email.match(

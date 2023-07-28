@@ -12,6 +12,8 @@ router.get("/", isLoggedIn, userController.getAllUsers);
 
 router.post("/login", userController.authenticateUser);
 
+router.post("/attachUsername", isLoggedIn, userController.attachUsername);
+
 router.post(
     "/refresh",
     checkRefreshTokenPresentInCookie,
