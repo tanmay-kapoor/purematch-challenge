@@ -1,10 +1,22 @@
 const db = require("../models");
 const Post = db.Post;
 const Photo = db.Photo;
+const User = db.User;
+const Comment = db.Comment;
 
 class PostService {
     static async getAllPosts() {
-        return await Post.findAll({ raw: true, include: Photo });
+        return await Post.findAll({
+            raw: true,
+            include: [
+                {
+                    model: Photo,
+                },
+                {
+                    model: User,
+                },
+            ],
+        });
     }
 
     static async getPostsByUser(email) {

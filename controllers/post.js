@@ -1,5 +1,6 @@
 const PostService = require("../services/PostService");
 const PhotoService = require("../services/PhotoService");
+const CommentService = require("../services/CommentService");
 const {
     S3Client,
     PutObjectCommand,
@@ -155,6 +156,26 @@ exports.replacePost = async (req, res, next) => {
         await PhotoService.bulkCreate(photos);
 
         res.status(200).json(result);
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.createComment = async (req, res, next) => {
+    try {
+        if (!req.body.content) {
+            res.status(400).json({ error: "Comment is required" });
+            return;
+        }
+
+        const details = {
+            content: req.body.content,
+            author: req.user.email,
+            post_id: req.params.id,
+        };
+
+        await CommentService.addComment(details);
+        res.json({ message: "Comment added" });
     } catch (err) {
         next(err);
     }
