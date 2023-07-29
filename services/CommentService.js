@@ -10,7 +10,7 @@ class CommentService {
         const { id, limit, offset } = details;
         return await Comment.findAll({
             where: { post_id: id },
-            order: [["created_at", "DESC"]],
+            order: [["created_at", "ASC"]],
             limit,
             offset,
             raw: true,
