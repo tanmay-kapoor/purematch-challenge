@@ -1,4 +1,8 @@
-# Approach to solving req3
+# AWS EB domain
+
+`http://purematch-ebs-env.eba-zcqinfp3.us-east-1.elasticbeanstalk.com/`
+
+## Approach to solving req3
 
 Since posts can now have multiple comments, I created a comments table with post id as the foreign key and the relationship between posts and comments is 1 to many since 1 post can have many posts but 1 comment can belong to only 1 post.
 A comment is posted by a user and hence there is also a 1 to many relationship between a user and a comment since a user can have multiple comments but a comment can be posted by only 1 user.
