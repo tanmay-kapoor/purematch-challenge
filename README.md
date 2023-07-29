@@ -21,4 +21,4 @@ To calculate approximately when the post was created, I used the `dayjs` npm pac
 
 ## Rough ER digram of the model after completion
 
-![image](req2.png)
+![image](screenshots/req2.png)
