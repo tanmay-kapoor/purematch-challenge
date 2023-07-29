@@ -1,6 +1,6 @@
 # General approach for all requirements
 
-For all the requirements, databse is a deployed AWS RDS whose connection details are supplied in env variables. The final project is deployed on AWS EB where it operates without any local dependencies. All images are uploaded to AWS S3.
+For all the requirements, databse is a deployed AWS RDS whose connection details are supplied in env variables. The final project (req3 branch is the latest one) is deployed on AWS EB where it operates without any local dependencies. All images are uploaded to AWS S3.
 
 For all requirements, I created the migration files to make the changes to the database and then typed the command
 `npx sequelize-cli db:migrate`
