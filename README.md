@@ -53,4 +53,4 @@ All database migrations are present in the migrarions folder. They help in migra
 
 ### Rough ER digram of the model after completion
 
-![image](req1.png)
+![image](screenshots/req1.png)
