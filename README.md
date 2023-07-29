@@ -31,6 +31,13 @@ To validate whether the user is logged in or not before requests that require au
 3. Process the multipart form data using multer
 4. Access the file in the request, assign a random unique name to the file, upload it to S3 and store the name of image in the database.
 
+## How to add Authorization header
+
+To add the jwt in request header you need to send it with the Authorization header in the following format:
+`Authorization: "Bearer {jwt}"`
+
+For Postman, navigate to Authorization => choose bearer token in type => add the accessToken
+
 Whenever we want to display the image, we can get the image name from the database, and use this name to get a signed url from AWS S3.
 
 Since, there was no mention of whether images uploaded to S3 should be publicly accessible, I chose the more secure version of getting signed urls of photos whenever the user requests them and the generated urls are valid for the enxt 1 hour.
