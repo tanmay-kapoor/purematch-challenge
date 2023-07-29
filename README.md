@@ -19,4 +19,21 @@ To add the option of `username` for all users, I wrote a database migration scri
 
 ## Rough ER digram of the model after completion
 
-![image](req3.png)
+![image](screenshots/req3.png)
+
+## Api call screenshots
+
+![image](screenshots/1.png)
+![image](screenshots/2.png)
+![image](screenshots/3.png)
+![image](screenshots/4.png)
+![image](screenshots/5.png)
+![image](screenshots/6.png)
+![image](screenshots/7.png)
+![image](screenshots/8.png)
+![image](screenshots/9.png)
+![image](screenshots/10.png)
+![image](screenshots/11.png)
+![image](screenshots/12.png)
+![image](screenshots/13.png)
+![image](screenshots/14.png)
