@@ -1,7 +1,9 @@
 # General approach for all requirements
 
 `req1: master branch`
+
 `req2: req2 branch`
+
 `req3: req3 branch`
 
 For all the requirements, databse is a deployed AWS RDS whose connection details are supplied in env variables. The final project (req3 branch is the latest one) is deployed on AWS EB where it operates without any local dependencies. All images are uploaded to AWS S3.
@@ -38,6 +40,7 @@ To validate whether the user is logged in or not before requests that require au
 ## How to add Authorization header
 
 To add the jwt in request header you need to send it with the Authorization header in the following format:
+
 `Authorization: "Bearer {jwt}"`
 
 For Postman, navigate to Authorization => choose bearer token in type => add the accessToken
