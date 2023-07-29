@@ -186,6 +186,12 @@ exports.getCommentsByPostId = async (req, res, next) => {
         const comments = await CommentService.getCommentsByPostId(
             req.params.id
         );
+        for (const comment of comments) {
+            const createdAt = comment["created_at"];
+            const timeDiff = getTimeAndDateDifference(createdAt);
+            comment["postedTime"] = timeDiff;
+            delete comment["created_at"];
+        }
         res.status(200).json(comments);
     } catch (err) {
         next(err);
@@ -229,6 +235,7 @@ const randomImageName = (bytes = 32) => {
 const attachPhotoUrlAndFormat = async (posts) => {
     const tempStructure = {};
 
+    const createdAtTime = {};
     for (const post of posts) {
         if (!tempStructure[post.id]) {
             tempStructure[post.id] = {
@@ -236,9 +243,9 @@ const attachPhotoUrlAndFormat = async (posts) => {
                 title: post.title,
                 description: post.description,
                 author: post.author,
-                created_at: post.created_at,
                 photos: [],
             };
+            createdAtTime[post.id] = post["created_at"];
         }
 
         const url = await getSignedUrlFromS3(post["Photos.name"]);
@@ -259,8 +266,8 @@ const attachPhotoUrlAndFormat = async (posts) => {
         formattedData.push({ id, ...tempStructure[id] });
     }
     formattedData.sort((a, b) => {
-        const aDate = dayjs(a["created_at"]);
-        const bDate = dayjs(b["created_at"]);
+        const aDate = dayjs(createdAtTime[a.id]);
+        const bDate = dayjs(createdAtTime[b.id]);
         return bDate.diff(aDate);
     });
     return formattedData;
