@@ -10,6 +10,8 @@ router.get("/", isLoggedIn, postController.getAllPosts);
 
 router.get("/:email", isLoggedIn, postController.getPostsByUser);
 
+router.get("/:id/comments/", isLoggedIn, postController.getCommentsByPostId);
+
 router.post(
     "/create",
     isLoggedIn,
@@ -17,16 +19,14 @@ router.post(
     postController.createPost
 );
 
+router.post("/:id/comments/create", isLoggedIn, postController.createComment);
+
 router.patch(
     "/:id",
     isLoggedIn,
     upload.array("photos", maxCount),
     postController.updatePost
 );
-
-router.post("/:id/comments/create", isLoggedIn, postController.createComment);
-
-router.get("/:id/comments/", isLoggedIn, postController.getCommentsByPostId);
 
 router.put(
     "/:id",

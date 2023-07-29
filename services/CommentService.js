@@ -6,12 +6,19 @@ class CommentService {
         return await Comment.create(details);
     }
 
-    static async getCommentsByPostId(postId) {
+    static async getCommentsByPostId(details) {
+        const { id, limit, offset } = details;
         return await Comment.findAll({
-            where: { post_id: postId },
+            where: { post_id: id },
             order: [["created_at", "DESC"]],
+            limit,
+            offset,
             raw: true,
         });
+    }
+
+    static async getCommentsByPostIdCount(postId) {
+        return await Comment.count({ where: { post_id: postId } });
     }
 
     static async deleteCommentById(id) {

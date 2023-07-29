@@ -27,9 +27,29 @@ const s3 = new S3Client({
 
 exports.getAllPosts = async (req, res, next) => {
     try {
-        let posts = await PostService.getAllPosts();
-        posts = await attachPhotoUrlAndFormat(posts);
-        res.status(200).json(posts);
+        const totalCount = await PostService.getAllPostsCount();
+        const limit = parseInt(req.query.size) || 10;
+        const page = parseInt(req.query.page) - 1 || 0;
+        const offset = page * limit;
+
+        if (page < 0) {
+            res.status(400).json({
+                error: "Invalid page number. Starts with 1",
+            });
+            return;
+        }
+
+        const posts = await PostService.getAllPosts({ limit, offset });
+        const data = await attachPrevAndNextUrlsToPosts(
+            req,
+            res,
+            posts,
+            limit,
+            page,
+            offset,
+            totalCount
+        );
+        res.status(200).json(data);
     } catch (err) {
         next(err);
     }
@@ -37,9 +57,35 @@ exports.getAllPosts = async (req, res, next) => {
 
 exports.getPostsByUser = async (req, res, next) => {
     try {
-        let posts = await PostService.getPostsByUser(req.params.email);
-        posts = await attachPhotoUrlAndFormat(posts);
-        res.status(200).json(posts);
+        const totalCount = await PostService.getPostsByUserCount(
+            req.params.email
+        );
+        const limit = parseInt(req.query.size) || 10;
+        const page = parseInt(req.query.page) - 1 || 0;
+        const offset = page * limit;
+
+        if (page < 0) {
+            res.status(400).json({
+                error: "Invalid page number. Starts with 1",
+            });
+            return;
+        }
+
+        const posts = await PostService.getPostsByUser({
+            email: req.params.email,
+            limit,
+            offset,
+        });
+        const data = await attachPrevAndNextUrlsToPosts(
+            req,
+            res,
+            posts,
+            limit,
+            page,
+            offset,
+            totalCount
+        );
+        res.status(200).json(data);
     } catch (err) {
         next(err);
     }
@@ -183,19 +229,103 @@ exports.createComment = async (req, res, next) => {
 
 exports.getCommentsByPostId = async (req, res, next) => {
     try {
-        const comments = await CommentService.getCommentsByPostId(
+        const totalCount = await CommentService.getCommentsByPostIdCount(
             req.params.id
         );
+        const limit = parseInt(req.query.size) || 10;
+        const page = parseInt(req.query.page) - 1 || 0;
+        const offset = page * limit;
+
+        if (page < 0) {
+            res.status(400).json({
+                error: "Invalid page number. Starts with 1",
+            });
+            return;
+        }
+
+        const comments = await CommentService.getCommentsByPostId({
+            id: req.params.id,
+            limit,
+            offset,
+        });
+
         for (const comment of comments) {
             const createdAt = comment["created_at"];
             const timeDiff = getTimeAndDateDifference(createdAt);
             comment["postedTime"] = timeDiff;
             delete comment["created_at"];
         }
-        res.status(200).json(comments);
+
+        const isLastPage =
+            comments.length < limit || offset + limit >= totalCount;
+
+        const currCount = comments.length + Math.max(0, page) * limit;
+        if (currCount > totalCount) {
+            res.status(400).json({
+                error: `Page count exceeded. Last page is ${parseInt(
+                    Math.floor(totalCount / limit) + 1
+                )}`,
+            });
+            return;
+        }
+
+        const protocol = req.protocol;
+        const host = req.get("host");
+
+        const data = { comments };
+        if (page !== 0) {
+            const prevUrl = `/posts/${req.params.id}/comments?size=${limit}&page=${page}`;
+            data.prev = `${protocol}://${host}${prevUrl}`;
+        }
+        if (!isLastPage) {
+            const nextUrl = `/posts/${
+                req.params.id
+            }/comments?size=${limit}&page=${page + 2}`;
+            data.next = `${protocol}://${host}${nextUrl}`;
+        }
+
+        res.status(200).json(data);
     } catch (err) {
         next(err);
     }
+};
+
+const attachPrevAndNextUrlsToPosts = async (
+    req,
+    res,
+    posts,
+    limit,
+    page,
+    offset,
+    totalCount
+) => {
+    const isLastPage = posts.length < limit || offset + limit >= totalCount;
+    posts = await attachPhotoUrlAndFormat(posts);
+
+    const currCount = posts.length + Math.max(0, page) * limit;
+    if (currCount > totalCount) {
+        res.status(400).json({
+            error: `Page count exceeded. Last page is ${parseInt(
+                Math.floor(totalCount / limit) + 1
+            )}`,
+        });
+        return;
+    }
+
+    const protocol = req.protocol;
+    const host = req.get("host");
+
+    const data = { posts };
+    if (page !== 0) {
+        const prevUrl = `/posts?size=${limit}&page=${page}`;
+        data.prev = `${protocol}://${host}${prevUrl}`;
+    }
+    if (!isLastPage) {
+        const nextUrl = `/posts?size=${limit}&page=${page + 2}`;
+        data.next = `${protocol}://${host}${nextUrl}`;
+    }
+
+    return data;
 };
 
 const deletePhotosFromS3 = async (photos) => {
@@ -248,16 +378,16 @@ const attachPhotoUrlAndFormat = async (posts) => {
             createdAtTime[post.id] = post["created_at"];
         }
 
-        const url = await getSignedUrlFromS3(post["Photos.name"]);
+        const url = await getSignedUrlFromS3(post["name"]);
         tempStructure[post.id].photos.push(url);
 
         const createdAt = post["created_at"];
         const timeDiff = getTimeAndDateDifference(createdAt);
 
         tempStructure[post.id]["uploadTime"] = timeDiff;
-        tempStructure[post.id]["name"] = post["User.name"];
+        tempStructure[post.id]["name"] = post["name"];
         if (post["User.username"]) {
-            tempStructure[post.id]["username"] = post["User.username"];
+            tempStructure[post.id]["username"] = post["username"];
         }
     }
 
