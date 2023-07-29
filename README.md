@@ -5,6 +5,10 @@ For all the requirements, databse is a deployed AWS RDS whose connection details
 For all requirements, I created the migration files to make the changes to the database and then typed the command
 `npx sequelize-cli db:migrate`
 
+## AWS EB domain
+
+`http://purematch-ebs-env.eba-zcqinfp3.us-east-1.elasticbeanstalk.com/`
+
 ## Approach to solving this requirement
 
 For this requirement, the main task was to setup the code repository with an Express.js app, and I have decided to go wih the Model View Controller architecture to increase code readability.
