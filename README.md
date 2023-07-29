@@ -1,4 +1,8 @@
-# Approach to solving req2
+# AWS EB domain
+
+`http://purematch-ebs-env.eba-zcqinfp3.us-east-1.elasticbeanstalk.com/`
+
+## Approach to solving req2
 
 Since the user can now upload 1-5 photos with each post, the relationship bwetween a post and photos becomes a 1 to many relationship since 1 post can have mutliple photos. In the previous requirement, it was a 1 to 1 relationship and did not need a separate table of its own. Hoever, as per this requirement, the database structure changes (Check the ER diagram below) and I have written the necessary migrations for it.
 
