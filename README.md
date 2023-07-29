@@ -6,7 +6,7 @@ The concerned migrations are responsible for creating the photos table, adding a
 
 We also need to add an attribute 'created_at' which lets us know when the post was created. For this I have chosen the following flow:
 
-- When the databse is migrated to add the created_at field, it provides a default value of the current timestamp to all the existing posts. Since we did not record this data in the previous version, I have chosen the creation date as the date since we started recording it.
+- When the database is migrated to add the created_at field, it provides a default value of the current timestamp to all the existing posts. Since we did not record this data in the previous version, I have chosen the creation date as the date since we started recording it.
 - We can also go a different way where we can keep this field as nullable and don't assign a default value to the existing entries. All new entries will have a creation date but the older entries will have a null value which can be display as "unknown" to the user.
 
 Since we can upload multiple photos along with a post, we need to use `multer.array` instead of `multer.single` to allow multiple files to be processed together. This required me to do changes to the middleware and add a `maxCount` variables which stores the maximum number of files that can be uploaded with each post.
@@ -15,6 +15,6 @@ To support the feature of editing a post, I have added a PATCH and PUT reqest in
 
 To calculate approximately when the post was created, I used the `dayjs` npm package to calculaye the time difference in seconds, mins, hrs, days, weeks, months, years and displayed the largest possible time to the user. It is a rough estimate (like instagram and some other apps) which means that a time difference of 1 yr 7 days is displayed as 1 yr. This can easily be changed with a very small code block.
 
-## Rough ER digram of the model after completion.
+## Rough ER digram of the model after completion
 
 ![image](req2.png)
