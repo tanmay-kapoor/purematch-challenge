@@ -8,7 +8,7 @@ class PostService {
     static async getAllPosts(details) {
         const { limit, offset } = details;
         return await db.sequelize.query(
-            `SELECT * FROM (
+            `SELECT x.*, u.*, ph.name AS "photoName" FROM (
                 ((SELECT * FROM posts p ORDER BY created_at ASC LIMIT ? OFFSET ?) AS x 
                  LEFT OUTER JOIN users u ON x.author = u.email)
                 LEFT OUTER JOIN photos ph ON x.id = ph.post_id
@@ -34,7 +34,7 @@ class PostService {
     static async getPostsByUser(details) {
         const { email, limit, offset } = details;
         return await db.sequelize.query(
-            `SELECT * FROM (
+            `SELECT x.*, u.*, ph.name as "photoName" FROM (
                 ((SELECT * FROM posts p WHERE p.author = ?
                   ORDER BY created_at ASC 
                   LIMIT ? OFFSET ?) AS x 

@@ -102,6 +102,7 @@ exports.createPost = async (req, res, next) => {
             res.status(400).json({
                 error: "Not allowed to upload more than 5 photos.",
             });
+            return;
         }
 
         if (!req.body.title || !req.body.description) {
@@ -378,7 +379,7 @@ const attachPhotoUrlAndFormat = async (posts) => {
             createdAtTime[post.id] = post["created_at"];
         }
 
-        const url = await getSignedUrlFromS3(post["name"]);
+        const url = await getSignedUrlFromS3(post["photoName"]);
         tempStructure[post.id].photos.push(url);
 
         const createdAt = post["created_at"];
@@ -386,7 +387,7 @@ const attachPhotoUrlAndFormat = async (posts) => {
 
         tempStructure[post.id]["uploadTime"] = timeDiff;
         tempStructure[post.id]["name"] = post["name"];
-        if (post["User.username"]) {
+        if (post["username"]) {
             tempStructure[post.id]["username"] = post["username"];
         }
     }
